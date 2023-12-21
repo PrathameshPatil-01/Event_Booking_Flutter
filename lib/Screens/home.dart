@@ -1,6 +1,11 @@
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:the_internet_folks/Screens/event.dart';
+import 'package:the_internet_folks/Screens/search.dart';
+import 'package:the_internet_folks/models/post.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,8 +15,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'The Internet Folks',
       theme: ThemeData(
+        colorSchemeSeed: Colors.blue,
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Events'),
     );
   }
@@ -27,31 +34,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void loadItems() async {
-    var request = http.Request(
-        'GET',
-        Uri.parse(
-            'https://sde-007.api.assignment.theinternetfolks.works/v1/event'));
+  Future<List<Post>> postsFuture = getPosts();
 
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 1000) {
-      print(await response.stream.bytesToString());
-    } else {
-      print(await response.stream.bytesToString());
-    }
+  // function to fetch data from api and return future list of posts
+  static Future<List<Post>> getPosts() async {
+    var url = Uri.parse(
+        "https://sde-007.api.assignment.theinternetfolks.works/v1/event");
+    final response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    final List body = json.decode(response.body)["content"]["data"];
+    return body.map((e) => Post.fromJson(e)).toList();
   }
 
+  // build function
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(
+            style: const TextStyle(fontSize: 30, color: Colors.black),
+            widget.title),
         actions: <Widget>[
           IconButton(
               onPressed: () {
-                loadItems();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchList()),
+                );
               },
               icon: const Icon(Icons.search)),
           IconButton(
@@ -59,17 +68,102 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: ListView(children: [
-          ListTile(
-            leading: Image.network(
-              "https://files.realpython.com/media/PyGame-Update_Watermarked.bb0aa2dfe80b.jpg",
-              height: 100,
-              width: 100,
-            ),
-          ),
-        ]),
+        // FutureBuilder
+        child: FutureBuilder<List<Post>>(
+          future: postsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // until data is fetched, show loader
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasData) {
+              // once data is fetched, display it on screen (call buildPosts())
+              final posts = snapshot.data!;
+              return buildPosts(posts);
+            } else {
+              // if no data, show simple Text
+              return const Text("No data available");
+            }
+          },
+        ),
       ),
     );
   }
-}
 
+  // function to display fetched data on screen
+  Widget buildPosts(List<Post> posts) {
+    // ListView Builder to show data in a list
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        final post = posts[index];
+        String dateTimeString = post.dateTime!;
+        DateTime dateTime = DateTime.parse(dateTimeString);
+        DateFormat formatter = DateFormat('EEE, MMM dd • hh:mm a');
+        String date = formatter.format(dateTime);
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => EventDetails(eventId: post.id!)),
+            );
+          },
+          child: Container(
+            color: const Color.fromARGB(255, 255, 255, 255),
+            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+            height: 100,
+            width: double.maxFinite,
+            child: Row(
+              children: [
+                Expanded(flex: 2, child: Image.network(post.bannerImage!)),
+                const SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  flex: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          style:
+                              const TextStyle(fontSize: 11, color: Colors.blue),
+                          date),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                          style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                          post.title!),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on,
+                              size: 13, color: Colors.grey[600]),
+                          Text(
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey[600]),
+                              post.venueCity!),
+                          Text(
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey[600]),
+                              "• ${post.venueCountry!}"),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
