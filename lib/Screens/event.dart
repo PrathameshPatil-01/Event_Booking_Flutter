@@ -39,6 +39,8 @@ class EventDetailsState extends State<EventDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final sizeh = MediaQuery.of(context).size.height;
+    final sizew = MediaQuery.of(context).size.width;
     return Scaffold(
       body: FutureBuilder<Post>(
         future: _eventFuture,
@@ -63,11 +65,12 @@ class EventDetailsState extends State<EventDetails> {
                   Stack(
                     children: [
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.3,
+                        height: sizeh > 600 ? sizeh * 0.4 : sizeh * 0.8,
+                        width: sizew,
                         child: Image.network(
                           event.bannerImage ??
                               'https://via.placeholder.com/500',
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                         ),
                       ),
                       Positioned(
@@ -76,9 +79,8 @@ class EventDetailsState extends State<EventDetails> {
                         right: 0,
                         child: AppBar(
                           iconTheme: const IconThemeData(color: Colors.white),
-                          backgroundColor:
-                              Colors.transparent, // Transparent app bar
-                          elevation: 0, // No shadow
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
                           title: const Text(
                               style:
                                   TextStyle(fontSize: 30, color: Colors.white),
@@ -107,7 +109,13 @@ class EventDetailsState extends State<EventDetails> {
                         ListTile(
                           leading: Image.network(
                             event.organiserIcon ??
-                                'https://via.placeholder.com/500',
+                                'https://icons-for-free.com/iconfiles/png/256/user-131965017684610507.png',
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              return Image.network(
+                                'https://icons-for-free.com/iconfiles/png/256/user-131965017684610507.png',
+                              );
+                            },
                           ),
                           title: Text(
                               style: const TextStyle(
@@ -137,7 +145,7 @@ class EventDetailsState extends State<EventDetails> {
                         ),
                         ListTile(
                           leading: Image.network(
-                            "https://icons-for-free.com/iconfiles/png/256/globe+location+world+icon-1320196720329899980.png",
+                            "https://icons-for-free.com/iconfiles/png/256/gps+location+map+marker+icon-1320137092038384184.png",
                           ),
                           title: const Text(
                               style: TextStyle(
@@ -176,9 +184,7 @@ class EventDetailsState extends State<EventDetails> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Add functionality for FAB here
-        },
+        onPressed: () {},
         label: Row(
           children: [
             const Text(style: TextStyle(fontSize: 22), 'Book Now'),

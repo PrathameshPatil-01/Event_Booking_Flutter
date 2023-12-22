@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:the_internet_folks/Screens/event.dart';
 import 'package:the_internet_folks/models/post.dart';
 
 class SearchList extends StatefulWidget {
@@ -109,9 +110,10 @@ class _Search extends State<SearchList> {
     );
   }
 
-  // function to display fetched data on screen
   Widget buildPosts(List<Post> posts) {
-    // ListView Builder to show data in a list
+    final sizeh = MediaQuery.of(context).size.height;
+    final sizew = MediaQuery.of(context).size.width;
+
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, index) {
@@ -121,17 +123,47 @@ class _Search extends State<SearchList> {
         DateFormat formatter = DateFormat('EEE, MMM dd • hh:mm a');
         String date = formatter.format(dateTime);
         return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => EventDetails(eventId: post.id!)),
+            );
+          },
           child: Container(
-            color: const Color.fromARGB(255, 255, 255, 255),
             margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
             padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-            height: 100,
+            height: sizeh > 600 && sizew < 600 ? sizeh * 0.1 : sizeh * 0.3,
             width: double.maxFinite,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey[100]!,
+                  offset: const Offset(
+                    5.0,
+                    5.0,
+                  ),
+                  blurRadius: 100.0,
+                  spreadRadius: 1.0,
+                ), //BoxShadow
+                const BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(0.0, 0.0),
+                  blurRadius: 0.0,
+                  spreadRadius: 0.0,
+                ), //BoxShadow
+              ],
+            ),
             child: Row(
               children: [
-                Expanded(flex: 2, child: Image.network(post.bannerImage!)),
-                const SizedBox(
-                  width: 15,
+                Expanded(
+                    flex: 2,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(post.bannerImage!, fit: BoxFit.fill),
+                    )),
+                SizedBox(
+                  width: sizew * 0.05,
                 ),
                 Expanded(
                   flex: 4,
@@ -140,7 +172,7 @@ class _Search extends State<SearchList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        date, // Style within Text constructor
+                        date,
                         style:
                             const TextStyle(fontSize: 11, color: Colors.blue),
                       ),
@@ -148,7 +180,7 @@ class _Search extends State<SearchList> {
                         height: 3,
                       ),
                       Text(
-                        post.title!, // Style within Text constructor
+                        post.title!,
                         style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
