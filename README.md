@@ -21,7 +21,9 @@ To install the app on your Android device, follow these steps:
 
 ## Download APK:
 
-[![Download](assets/icon/icon.png)](https://drive.google.com/file/d/1omyafYWPnrApBlX5f2_QH2EQl2IIK8Ex/view?usp=drive_link)
+<a href="https://drive.google.com/file/d/1omyafYWPnrApBlX5f2_QH2EQl2IIK8Ex/view?usp=drive_link">
+  <img src="assets/icon/icon.png" alt="Download" width="100" height="100">
+</a>
 
 Click the icon above to download the APK file.
 
