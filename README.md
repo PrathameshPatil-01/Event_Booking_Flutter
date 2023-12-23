@@ -11,7 +11,7 @@ Welcome to our Event Booking App! This application allows users to effortlessly 
 
 To install the app on your Android device, follow these steps:
 
-1. Click on the following link to download the APK file: [Download App](https://drive.google.com/file/d/1BH4AZ5KLjl-i-KPIvVPcsm-tmUhYGtqB/view?usp=drive_link)
+1. Click on the following link to download the APK file: [Download App](https://drive.google.com/file/d/1omyafYWPnrApBlX5f2_QH2EQl2IIK8Ex/view?usp=drive_link)
    
 2. Once the download is complete, locate the downloaded APK file on your device.
 
@@ -21,8 +21,10 @@ To install the app on your Android device, follow these steps:
 
 ## Download APK:
 
-[![Download](assets/icon/icon.png)](https://drive.google.com/file/d/1BH4AZ5KLjl-i-KPIvVPcsm-tmUhYGtqB/view?usp=drive_link)
+<a href="https://drive.google.com/file/d/1omyafYWPnrApBlX5f2_QH2EQl2IIK8Ex/view?usp=drive_link">
+  <img src="assets/icon/icon.png" alt="Download" width="100" height="100">
+</a>
 
 Click the icon above to download the APK file.
 
-[Direct download link](https://drive.google.com/file/d/1BH4AZ5KLjl-i-KPIvVPcsm-tmUhYGtqB/view?usp=drive_link)
+[Direct download link](https://drive.google.com/file/d/1omyafYWPnrApBlX5f2_QH2EQl2IIK8Ex/view?usp=drive_link)
