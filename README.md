@@ -7,6 +7,13 @@ Welcome to our Event Booking App! This application allows users to effortlessly 
 - Browse through a wide range of events.
 - View event details, timings, and locations.
 
+## Screenshots
+
+
+| ![Screens](screenshots/Screenshot_e_b.png) | 
+| :--------------------------------:  | 
+|            App Screens Ui            |      
+
 ## Installation:
 
 To install the app on your Android device, follow these steps:
