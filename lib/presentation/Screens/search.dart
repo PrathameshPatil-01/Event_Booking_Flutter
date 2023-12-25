@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:the_internet_folks/Screens/event.dart';
+import 'package:the_internet_folks/presentation/Screens/event.dart';
 import 'package:the_internet_folks/models/post.dart';
 
 class SearchList extends StatefulWidget {

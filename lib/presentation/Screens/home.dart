@@ -1,25 +1,32 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:the_internet_folks/Screens/event.dart';
-import 'package:the_internet_folks/Screens/search.dart';
+import 'package:the_internet_folks/bloc/post_bloc.dart';
+import 'package:the_internet_folks/data/data_provider/post_data_provider.dart';
+import 'package:the_internet_folks/data/repository/post_repository.dart';
 import 'package:the_internet_folks/models/post.dart';
+import 'package:the_internet_folks/presentation/Screens/event.dart';
+import 'package:the_internet_folks/presentation/Screens/search.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'The Internet Folks',
-      theme: ThemeData(
-        colorSchemeSeed: Colors.blue,
-        useMaterial3: true,
+    return RepositoryProvider(
+      create: (context) => PostRepository(PostDataProvider()),
+      child: BlocProvider(
+        create: (context) => PostBloc(context.read<PostRepository>()),
+        child: MaterialApp(
+          title: 'The Internet Folks',
+          theme: ThemeData(
+            colorSchemeSeed: Colors.blue,
+            useMaterial3: true,
+          ),
+          debugShowCheckedModeBanner: false,
+          home: const MyHomePage(title: 'Events'),
+        ),
       ),
-      debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'Events'),
     );
   }
 }
@@ -34,18 +41,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Post>> postsFuture = getPosts();
-
-  static Future<List<Post>> getPosts() async {
-    var url = Uri.parse(
-        "https://sde-007.api.assignment.theinternetfolks.works/v1/event");
-    final response =
-        await http.get(url, headers: {"Content-Type": "application/json"});
-    final List body = json.decode(response.body)["content"]["data"];
-    return body.map((e) => Post.fromJson(e)).toList();
+  @override
+  void initState() {
+    super.initState();
+    context.read<PostBloc>().add(PostFetched());
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -66,17 +67,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: FutureBuilder<List<Post>>(
-          future: postsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasData) {
-              final posts = snapshot.data!;
+        child: BlocBuilder<PostBloc, PostState>(
+          builder: (context, state) {
+            if (state is PostFailure) {
+              return Text(state.error);
+            } else if (state is PostSuccess) {
+              final posts = state.postsList;
               return buildPosts(posts);
-            } else {
-              return const Text("No data available");
-            }
+            } else if (state != PostSuccess) {
+              return const CircularProgressIndicator();
+            } else
+              return Text("NO DATA AVAILABLE");
           },
         ),
       ),
