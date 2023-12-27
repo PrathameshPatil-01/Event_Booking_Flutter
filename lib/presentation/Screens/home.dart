@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<PostBloc>().add(PostFetched());
+    context.read<PostBloc>().add(PostFetched(search: ""));
   }
 
   Widget build(BuildContext context) {

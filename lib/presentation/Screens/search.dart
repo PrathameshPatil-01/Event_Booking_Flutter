@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:the_internet_folks/presentation/Screens/event.dart';
+import 'package:the_internet_folks/bloc/post_bloc.dart';
 import 'package:the_internet_folks/models/post.dart';
+import 'package:the_internet_folks/presentation/Screens/event.dart';
 
 class SearchList extends StatefulWidget {
   const SearchList({Key? key}) : super(key: key);
@@ -17,26 +16,12 @@ class SearchList extends StatefulWidget {
 
 class _Search extends State<SearchList> {
   String searchTerm = "";
-  late Future<List<Post>> postsFuture;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    postsFuture = getPosts(searchTerm: searchTerm);
-  }
-
-  Future<List<Post>> getPosts({String searchTerm = ""}) async {
-    var url = Uri.parse(
-        "https://sde-007.api.assignment.theinternetfolks.works/v1/event?search=$searchTerm");
-    final response =
-        await http.get(url, headers: {"Content-Type": "application/json"});
-    if (response.statusCode == 200) {
-      final List body = json.decode(response.body)["content"]["data"];
-      return body.map((e) => Post.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load posts');
-    }
+    context.read<PostBloc>().add(PostFetched(search: searchTerm));
   }
 
   @override
@@ -69,7 +54,9 @@ class _Search extends State<SearchList> {
                     onChanged: (val) {
                       setState(() {
                         searchTerm = val;
-                        postsFuture = getPosts(searchTerm: searchTerm);
+                        context
+                            .read<PostBloc>()
+                            .add(PostFetched(search: searchTerm));
                       });
                     },
                     decoration: const InputDecoration(
@@ -88,19 +75,17 @@ class _Search extends State<SearchList> {
           ),
           Expanded(
             child: Center(
-              child: FutureBuilder<List<Post>>(
-                future: postsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasData) {
-                    final posts = snapshot.data!;
+              child: BlocBuilder<PostBloc, PostState>(
+                builder: (context, state) {
+                  if (state is PostFailure) {
+                    return Text(state.error);
+                  } else if (state is PostSuccess) {
+                    final posts = state.postsList;
                     return buildPosts(posts);
-                  } else if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
-                  } else {
-                    return const Text("No data available");
-                  }
+                  } else if (state != PostSuccess) {
+                    return const CircularProgressIndicator();
+                  } else
+                    return Text("NO DATA AVAILABLE");
                 },
               ),
             ),
