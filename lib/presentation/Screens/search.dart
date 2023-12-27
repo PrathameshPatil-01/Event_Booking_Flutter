@@ -74,20 +74,18 @@ class _Search extends State<SearchList> {
             ),
           ),
           Expanded(
-            child: Center(
-              child: BlocBuilder<PostBloc, PostState>(
-                builder: (context, state) {
-                  if (state is PostFailure) {
-                    return Text(state.error);
-                  } else if (state is PostSuccess) {
-                    final posts = state.postsList;
-                    return buildPosts(posts);
-                  } else if (state != PostSuccess) {
-                    return const CircularProgressIndicator();
-                  } else
-                    return Text("NO DATA AVAILABLE");
-                },
-              ),
+            child: BlocBuilder<PostBloc, PostState>(
+              builder: (context, state) {
+                if (state is PostFailure) {
+                  return Text(state.error);
+                } else if (state is PostSuccess) {
+                  final posts = state.postsList;
+                  return buildPosts(posts);
+                } else if (state != PostSuccess) {
+                  return Center(child: const CircularProgressIndicator());
+                } else
+                  return Center(child: Text("NO DATA AVAILABLE"));
+              },
             ),
           ),
         ],

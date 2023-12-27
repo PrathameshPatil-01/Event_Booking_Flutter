@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:the_internet_folks/bloc/event_bloc.dart';
 import 'package:the_internet_folks/bloc/post_bloc.dart';
+import 'package:the_internet_folks/data/data_provider/event_data_provider.dart';
 import 'package:the_internet_folks/data/data_provider/post_data_provider.dart';
+import 'package:the_internet_folks/data/repository/event_repository.dart';
 import 'package:the_internet_folks/data/repository/post_repository.dart';
 import 'package:the_internet_folks/models/post.dart';
 import 'package:the_internet_folks/presentation/Screens/event.dart';
@@ -13,10 +16,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => PostRepository(PostDataProvider()),
-      child: BlocProvider(
-        create: (context) => PostBloc(context.read<PostRepository>()),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => PostRepository(PostDataProvider()),
+        ),
+        RepositoryProvider(
+          create: (context) => EventRepository(EventDataProvider()),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => PostBloc(context.read<PostRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => EventBloc(context.read<EventRepository>()),
+          ),
+        ],
         child: MaterialApp(
           title: 'The Internet Folks',
           theme: ThemeData(
@@ -66,20 +83,18 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {}, icon: const Icon(Icons.more_vert_rounded))
         ],
       ),
-      body: Center(
-        child: BlocBuilder<PostBloc, PostState>(
-          builder: (context, state) {
-            if (state is PostFailure) {
-              return Text(state.error);
-            } else if (state is PostSuccess) {
-              final posts = state.postsList;
-              return buildPosts(posts);
-            } else if (state != PostSuccess) {
-              return const CircularProgressIndicator();
-            } else
-              return Text("NO DATA AVAILABLE");
-          },
-        ),
+      body: BlocBuilder<PostBloc, PostState>(
+        builder: (context, state) {
+          if (state is PostFailure) {
+            return Text(state.error);
+          } else if (state is PostSuccess) {
+            final posts = state.postsList;
+            return buildPosts(posts);
+          } else if (state != PostSuccess) {
+            return Center(child: const CircularProgressIndicator());
+          } else
+            return Center(child: Text("NO DATA AVAILABLE"));
+        },
       ),
     );
   }

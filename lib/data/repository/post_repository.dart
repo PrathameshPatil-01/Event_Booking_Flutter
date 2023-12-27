@@ -12,8 +12,7 @@ class PostRepository {
       final List body = jsonDecode(postData)["content"]["data"];
       return body.map((e) => Post.fromJson(e)).toList();
     } catch (e) {
-      print(e);
+      throw Exception('Failed to fetch Posts: $e');
     }
-    throw ("");
   }
 }
