@@ -6,6 +6,7 @@ import 'package:the_internet_folks/models/post.dart';
 import 'package:the_internet_folks/presentation/Screens/event.dart';
 
 class SearchList extends StatefulWidget {
+  static const routeName = '/search';
   const SearchList({Key? key}) : super(key: key);
 
   @override
@@ -107,10 +108,10 @@ class _Search extends State<SearchList> {
         String date = formatter.format(dateTime);
         return InkWell(
           onTap: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                  builder: (context) => EventDetails(eventId: post.id!)),
+              EventDetails.routeName,
+              arguments: post.id,
             );
           },
           child: Container(

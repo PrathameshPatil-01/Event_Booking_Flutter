@@ -10,12 +10,14 @@ import 'package:the_internet_folks/data/repository/post_repository.dart';
 import 'package:the_internet_folks/models/post.dart';
 import 'package:the_internet_folks/presentation/Screens/event.dart';
 import 'package:the_internet_folks/presentation/Screens/search.dart';
+import 'package:the_internet_folks/presentation/routes/app_router.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final _appRouter = AppRouter();
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
@@ -35,6 +37,7 @@ class MyApp extends StatelessWidget {
           ),
         ],
         child: MaterialApp(
+          onGenerateRoute: _appRouter.onGenerateRoute,
           title: 'The Internet Folks',
           theme: ThemeData(
             colorSchemeSeed: Colors.blue,
@@ -50,7 +53,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
+  static const routeName = '/';
   final String title;
 
   @override
@@ -73,9 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           IconButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(builder: (context) => const SearchList()),
+                  SearchList.routeName,
                 );
               },
               icon: const Icon(Icons.search)),
@@ -113,10 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
         String date = formatter.format(dateTime);
         return InkWell(
           onTap: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                  builder: (context) => EventDetails(eventId: post.id!)),
+              EventDetails.routeName,
+              arguments: post.id,
             );
           },
           child: Container(

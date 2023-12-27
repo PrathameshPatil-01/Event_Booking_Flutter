@@ -5,6 +5,7 @@ import 'package:the_internet_folks/bloc/event_bloc.dart';
 import 'package:the_internet_folks/models/post.dart';
 
 class EventDetails extends StatefulWidget {
+  static const routeName = '/eventdetails';
   final int eventId;
 
   const EventDetails({Key? key, required this.eventId}) : super(key: key);
