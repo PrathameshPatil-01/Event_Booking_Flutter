@@ -14,10 +14,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
 
   void _getAllPosts(PostFetched event, Emitter<PostState> emit) async {
-    final searchTerm = event.search;
     emit(PostLoading());
     try {
-      final List<Post> posts = await postRepository.getPosts(searchTerm);
+      final List<Post> posts = await postRepository.getPosts();
       emit(PostSuccess(postsList: posts));
     } catch (e) {
       emit(PostFailure(e.toString()));

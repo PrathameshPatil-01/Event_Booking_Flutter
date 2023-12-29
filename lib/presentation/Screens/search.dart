@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:the_internet_folks/bloc/post_bloc.dart';
+import 'package:the_internet_folks/bloc/post_search_bloc.dart';
 import 'package:the_internet_folks/models/post.dart';
 import 'package:the_internet_folks/presentation/Screens/event.dart';
 
@@ -22,7 +22,7 @@ class _Search extends State<SearchList> {
   @override
   void initState() {
     super.initState();
-    context.read<PostBloc>().add(PostFetched(search: searchTerm));
+    context.read<PostSearchBloc>().add(PostSearchFetched(search: searchTerm));
   }
 
   @override
@@ -56,8 +56,8 @@ class _Search extends State<SearchList> {
                       setState(() {
                         searchTerm = val;
                         context
-                            .read<PostBloc>()
-                            .add(PostFetched(search: searchTerm));
+                            .read<PostSearchBloc>()
+                            .add(PostSearchFetched(search: searchTerm));
                       });
                     },
                     decoration: const InputDecoration(
@@ -75,14 +75,14 @@ class _Search extends State<SearchList> {
             ),
           ),
           Expanded(
-            child: BlocBuilder<PostBloc, PostState>(
+            child: BlocBuilder<PostSearchBloc, PostSearchState>(
               builder: (context, state) {
-                if (state is PostFailure) {
+                if (state is PostSearchFailure) {
                   return Text(state.error);
-                } else if (state is PostSuccess) {
+                } else if (state is PostSearchSuccess) {
                   final posts = state.postsList;
                   return buildPosts(posts);
-                } else if (state != PostSuccess) {
+                } else if (state != PostSearchSuccess) {
                   return Center(child: const CircularProgressIndicator());
                 } else
                   return Center(child: Text("NO DATA AVAILABLE"));

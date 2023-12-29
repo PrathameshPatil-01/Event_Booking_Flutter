@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:the_internet_folks/bloc/event_bloc.dart';
 import 'package:the_internet_folks/bloc/post_bloc.dart';
+import 'package:the_internet_folks/bloc/post_search_bloc.dart';
 import 'package:the_internet_folks/data/data_provider/event_data_provider.dart';
 import 'package:the_internet_folks/data/data_provider/post_data_provider.dart';
+import 'package:the_internet_folks/data/data_provider/post_search_data_provider.dart';
 import 'package:the_internet_folks/data/repository/event_repository.dart';
 import 'package:the_internet_folks/data/repository/post_repository.dart';
+import 'package:the_internet_folks/data/repository/post_search_repository.dart';
 import 'package:the_internet_folks/models/post.dart';
 import 'package:the_internet_folks/presentation/Screens/event.dart';
 import 'package:the_internet_folks/presentation/Screens/search.dart';
@@ -24,6 +27,9 @@ class MyApp extends StatelessWidget {
           create: (context) => PostRepository(PostDataProvider()),
         ),
         RepositoryProvider(
+          create: (context) => PostSearchRepository(PostSearchDataProvider()),
+        ),
+        RepositoryProvider(
           create: (context) => EventRepository(EventDataProvider()),
         ),
       ],
@@ -31,6 +37,9 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => PostBloc(context.read<PostRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => PostSearchBloc(context.read<PostSearchRepository>()),
           ),
           BlocProvider(
             create: (context) => EventBloc(context.read<EventRepository>()),
@@ -64,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<PostBloc>().add(PostFetched(search: ""));
+    context.read<PostBloc>().add(PostFetched());
   }
 
   Widget build(BuildContext context) {

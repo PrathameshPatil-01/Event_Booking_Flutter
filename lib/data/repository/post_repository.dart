@@ -6,8 +6,8 @@ class PostRepository {
   final PostDataProvider postDataProvider;
   PostRepository(this.postDataProvider);
 
-  Future<List<Post>> getPosts(searchTerm) async {
-    final postData = await postDataProvider.getPosts(searchTerm);
+  Future<List<Post>> getPosts() async {
+    final postData = await postDataProvider.getPosts();
     try {
       final List body = jsonDecode(postData)["content"]["data"];
       return body.map((e) => Post.fromJson(e)).toList();
